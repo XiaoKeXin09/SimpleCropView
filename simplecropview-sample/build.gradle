@@ -1,0 +1,47 @@
+apply plugin: 'com.android.application'
+
+android {
+  compileSdkVersion 28
+  buildToolsVersion '28.0.2'
+
+  defaultConfig {
+    applicationId "com.example.simplecropviewsample"
+    minSdkVersion 14
+    targetSdkVersion 28
+    versionCode 1
+    versionName "1.0.0"
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+  sourceSets {
+    main {
+      res.srcDirs = ['src/main/res', 'src/main/res/raw']
+      assets.srcDirs = ['src/main/assets', 'src/main/assets/']
+    }
+  }
+  lintOptions {
+    abortOnError false
+  }
+}
+
+dependencies {
+
+  configurations {
+    all*.exclude group: 'com.android.support', module: 'support-v13'
+  }
+
+  implementation fileTree(dir: 'libs', include: ['*.jar'])
+  implementation project(':simplecropview')
+
+  implementation "com.github.hotchemi:permissionsdispatcher:$permissionsDispatcherVersion"
+  annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:$permissionsDispatcherVersion"
+  implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
+  implementation "com.tbruyelle.rxpermissions2:rxpermissions:$rxPermissionsVersion"
+  implementation "io.reactivex.rxjava2:rxjava:2.1.5"
+  implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+}

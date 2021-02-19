@@ -1,0 +1,110 @@
+apply plugin: 'com.android.library'
+
+dependencies {
+  implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+  implementation "io.reactivex.rxjava2:rxjava:2.1.5"
+  implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+}
+
+android {
+  compileSdkVersion 28
+  buildToolsVersion '28.0.2'
+
+  defaultConfig {
+    minSdkVersion 14
+    targetSdkVersion 28
+    versionCode 26
+    versionName "1.1.8"
+    consumerProguardFiles 'proguard-rules.pro'
+  }
+
+  dexOptions {
+    preDexLibraries = false
+  }
+}
+
+def file = project.rootProject.file('local.properties')
+if (!file.exists()) return
+
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+group = 'com.isseiaoki'
+version = '1.1.8'
+def siteUrl = 'https://github.com/IsseiAoki/SimpleCropView'
+def gitUrl = 'https://github.com/IsseiAoki/SimpleCropView.git'
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+
+  user = properties.getProperty("bintray.user")
+  key = properties.getProperty("bintray.apikey")
+
+  configurations = ['archives'] //When uploading configuration files
+  pkg {
+    repo = 'maven'
+    name = 'SimpleCropView'
+    desc = 'A simple image cropping library for Android.'
+    websiteUrl = siteUrl
+    issueTrackerUrl = 'https://github.com/IsseiAoki/SimpleCropView/issues'
+    vcsUrl = gitUrl
+    licenses = ['MIT']
+    labels = ['android']
+    publicDownloadNumbers = true
+  }
+}
+
+install {
+  repositories.mavenInstaller {
+    pom {
+      project {
+        packaging 'aar'
+        name 'SimpleCropView'
+        url siteUrl
+        licenses {
+          license {
+            name 'The MIT License (MIT)'
+            url 'http://opensource.org/licenses/MIT'
+          }
+        }
+        developers {
+          developer {
+            id 'isseiaoki'
+            name 'Issei Aoki'
+            email 'i.greenwood.dev@gmail.com'
+          }
+        }
+        scm {
+          connection 'https://github.com/IsseiAoki/SimpleCropView.git'
+          developerConnection 'https://github.com/IsseiAoki/SimpleCropView.git'
+          url siteUrl
+        }
+      }
+    }
+  }
+}
+
+task sourcesJar(type: Jar) {
+  from android.sourceSets.main.java.srcDirs
+  classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+  source = android.sourceSets.main.java.srcDirs
+  classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier = 'javadoc'
+  from javadoc.destinationDir
+}
+artifacts {
+  archives javadocJar
+  archives sourcesJar
+}
+
+//task findConventions << {
+//  println project.getConvention()
+//}
